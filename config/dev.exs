@@ -4,8 +4,8 @@ import Config
 config :johan_alerts_service, JohanAlertsService.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
   database: "johan_alerts_service_dev",
+  hostname: "127.0.0.1",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
