@@ -7,6 +7,65 @@ defmodule JohanAlertsService.Alert do
   alias JohanAlertsService.Repo
   alias JohanAlertsService.Alerts.Alert
 
+  @callback alerts_filter_by_date_type(integer, String.t(), String.t()) ::
+              {:ok, list()} | {:error, any()}
+
+  def paginate(query, page, per_page \\ 15) do
+    from query,
+      limit: ^per_page,
+      offset: (^page - 1) * ^per_page
+  end
+
+  def alerts_filter_by_date_type(page, nil, nil) do
+    from(a in Alert) |> paginate(page) |> Repo.all()
+  end
+
+  def alerts_filter_by_date_type(page, nil, type_key) do
+    Alert |> where([a], a.alert_type == ^type_key) |> paginate(page) |> Repo.all()
+  end
+
+  def alerts_filter_by_date_type(page, at_dt, nil) do
+    Alert |> where([a], a.incident_dt == ^at_dt) |> paginate(page) |> Repo.all()
+  end
+
+  def alerts_filter_by_date_type(page, at_dt, type_key) do
+    Alert
+    |> where([a], a.incident_dt == ^at_dt and a.alert_type == ^type_key)
+    |> paginate(page)
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns the list of alerts.
+
+  ## Examples
+
+      iex> list_alerts()
+      [%Alert{}, ...]
+
+  """
+  def list_alerts(%{"page" => page, "at_dt" => incident_dt, "type_key" => type_key} = _params) do
+    alerts_filter_by_date_type(page, incident_dt, type_key) |> parse_alerts_payload()
+  end
+
+  defp parse_alerts_payload(alerts) do
+    Enum.map(alerts, fn alert ->
+      parse_single_alert_payload(alert)
+    end)
+  end
+
+  defp parse_single_alert_payload(alert) do
+    %{
+      id: alert.id,
+      patient_value: alert.patient_value,
+      alert_type: alert.alert_type,
+      incident_dt: alert.incident_dt,
+      lat: alert.lat,
+      lon: alert.lon,
+      device_id: alert.device_id
+    }
+  end
+
   @doc """
   Creates a alert.
 
@@ -38,7 +97,7 @@ defmodule JohanAlertsService.Alert do
     alert_structure(content_map)
   end
 
-  def alert_structure(%{DT: dt, LAT: lat, LON: lon, T: type, VAL: val} = _updated_map) do
+  defp alert_structure(%{DT: dt, LAT: lat, LON: lon, T: type, VAL: val} = _updated_map) do
     {:ok,
      %{
        incident_dt: dt,
@@ -49,7 +108,7 @@ defmodule JohanAlertsService.Alert do
      }}
   end
 
-  def alert_structure(_updated_map) do
+  defp alert_structure(_updated_map) do
     {:error, "content keys error"}
   end
 end

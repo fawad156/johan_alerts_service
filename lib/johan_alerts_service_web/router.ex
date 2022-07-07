@@ -25,6 +25,7 @@ defmodule JohanAlertsServiceWeb.Router do
     pipe_through :api
 
     post "/alerts", AlertController, :alerts_create
+    get "/alerts", AlertController, :get_alerts
   end
 
   # Enables LiveDashboard only for development

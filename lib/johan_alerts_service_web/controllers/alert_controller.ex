@@ -12,6 +12,8 @@ defmodule JohanAlertsServiceWeb.AlertController do
     direction: :string
   }
 
+  @default_page 1
+
   def alerts_create(conn, params) do
     with {:ok, valid_params} <- Tarams.cast(params, @alerts_create_params),
          {:ok, alert_content} <- Alert.fetch_content_data(valid_params),
@@ -29,13 +31,33 @@ defmodule JohanAlertsServiceWeb.AlertController do
     end
   end
 
-  def success_response(conn) do
+  def get_alerts(conn, params) do
+    alerts =
+      params
+      |> update_alert_params()
+      |> Alert.list_alerts()
+
+    page = Map.get(params, "page", @default_page)
+
+    conn
+    |> put_status(:ok)
+    |> json(%{alerts: alerts, page: page})
+  end
+
+  defp update_alert_params(params) do
+    page = Map.get(params, "page", @default_page)
+    at_dt = Map.get(params, "at_dt", nil)
+    type_key = Map.get(params, "type_key", nil)
+    params |> Map.put("page", page) |> Map.put("at_dt", at_dt) |> Map.put("type_key", type_key)
+  end
+
+  defp success_response(conn) do
     conn
     |> put_status(:created)
     |> json(%{message: "success"})
   end
 
-  def error_response(conn, message \\ "Wrong params") do
+  defp error_response(conn, message \\ "Wrong params") do
     conn
     |> put_status(400)
     |> json(%{error: message})
