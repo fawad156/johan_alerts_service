@@ -8,7 +8,7 @@ defmodule JohanAlertsService.Patients.Patient do
     field :address, :string
     field :additional_information, :map, default: %{}
 
-    # caregiver has one health_center
+    # patinet has one health_center
     belongs_to :health_centers, JohanAlertsService.HealthCenters.HealthCenter,
       foreign_key: :health_center_id,
       type: :integer

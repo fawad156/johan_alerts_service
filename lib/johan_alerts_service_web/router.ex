@@ -21,9 +21,11 @@ defmodule JohanAlertsServiceWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", JohanAlertsServiceWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", JohanAlertsServiceWeb do
+    pipe_through :api
+
+    post "/alerts", AlertController, :alerts_create
+  end
 
   # Enables LiveDashboard only for development
   #

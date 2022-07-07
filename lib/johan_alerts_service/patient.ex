@@ -1,6 +1,6 @@
 defmodule JohanAlertsService.Patient do
   @moduledoc """
-  The Account context.
+  The Patient context.
   """
 
   import Ecto.Query, warn: false
@@ -32,11 +32,8 @@ defmodule JohanAlertsService.Patient do
 
   """
   def create_patient(attrs \\ %{}) do
-    data =
-      %Patient{}
-      |> Patient.changeset(attrs)
-      |> Repo.insert()
-
-    IO.inspect(data)
+    %Patient{}
+    |> Patient.changeset(attrs)
+    |> Repo.insert()
   end
 end
