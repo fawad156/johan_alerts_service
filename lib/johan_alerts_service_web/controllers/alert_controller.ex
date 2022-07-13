@@ -1,8 +1,7 @@
 defmodule JohanAlertsServiceWeb.AlertController do
   use JohanAlertsServiceWeb, :controller
 
-  alias JohanAlertsService.Alert
-  alias JohanAlertsService.HealthCenter
+  alias JohanAlertsService.{Alert, AlertNotification, HealthCenter, Patient}
 
   @alerts_create_params %{
     status: :string,
@@ -16,13 +15,21 @@ defmodule JohanAlertsServiceWeb.AlertController do
 
   def alerts_create(conn, params) do
     with {:ok, valid_params} <- Tarams.cast(params, @alerts_create_params),
-         {:ok, alert_content} <- Alert.fetch_content_data(valid_params),
+         {:ok, alert} <- Alert.fetch_content_data(valid_params),
+         {:ok, alert_content} <- Alert.alert_type_verify(alert),
          device = HealthCenter.get_device_by_sid(valid_params.sim_sid),
          {:ok, device_id} <- HealthCenter.get_device_id(device) do
       alert_content
       |> Map.put(:device_id, device_id)
       |> Map.put(:payload, valid_params)
-      |> Alert.create_alert()
+
+      # |> Alert.create_alert()
+
+      # send notification to caregives
+      patient = Patient.get_patient(device.patient_id)
+      caregivers = HealthCenter.get_caregivers_by_health_id(device.health_center_id)
+
+      Task.async(fn -> AlertNotification.send_notification(patient, caregivers, alert_content) end)
 
       success_response(conn)
     else

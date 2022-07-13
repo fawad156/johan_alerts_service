@@ -10,25 +10,25 @@ defmodule JohanAlertsService.Alert do
   @callback alerts_filter_by_date_type(integer, String.t(), String.t()) ::
               {:ok, list()} | {:error, any()}
 
-  def paginate(query, page, per_page \\ 15) do
+  defp paginate(query, page, per_page \\ 15) do
     from query,
       limit: ^per_page,
       offset: (^page - 1) * ^per_page
   end
 
-  def alerts_filter_by_date_type(page, nil, nil) do
+  defp alerts_filter_by_date_type(page, nil, nil) do
     from(a in Alert) |> paginate(page) |> Repo.all()
   end
 
-  def alerts_filter_by_date_type(page, nil, type_key) do
+  defp alerts_filter_by_date_type(page, nil, type_key) do
     Alert |> where([a], a.alert_type == ^type_key) |> paginate(page) |> Repo.all()
   end
 
-  def alerts_filter_by_date_type(page, at_dt, nil) do
+  defp alerts_filter_by_date_type(page, at_dt, nil) do
     Alert |> where([a], a.incident_dt == ^at_dt) |> paginate(page) |> Repo.all()
   end
 
-  def alerts_filter_by_date_type(page, at_dt, type_key) do
+  defp alerts_filter_by_date_type(page, at_dt, type_key) do
     Alert
     |> where([a], a.incident_dt == ^at_dt and a.alert_type == ^type_key)
     |> paginate(page)
@@ -111,4 +111,9 @@ defmodule JohanAlertsService.Alert do
   defp alert_structure(_updated_map) do
     {:error, "content keys error"}
   end
+
+  def alert_type_verify(%{alert_type: "BPM"} = alert), do: {:ok, alert}
+  def alert_type_verify(%{alert_type: "TEMP"} = alert), do: {:ok, alert}
+  def alert_type_verify(%{alert_type: "FALL"} = alert), do: {:ok, alert}
+  def alert_type_verify(%{alert_type: _alert_type} = _alert), do: {:error, "unknown alert type"}
 end

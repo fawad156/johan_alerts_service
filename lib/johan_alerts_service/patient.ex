@@ -36,4 +36,6 @@ defmodule JohanAlertsService.Patient do
     |> Patient.changeset(attrs)
     |> Repo.insert()
   end
+
+  def get_patient(id), do: Repo.get(Patient, id)
 end

@@ -1,6 +1,6 @@
 defmodule JohanAlertsService.HealthCenter do
   @moduledoc """
-  The Account context.
+  The HealthCenter, Devices & Caregivers context.
   """
 
   import Ecto.Query, warn: false
@@ -57,6 +57,9 @@ defmodule JohanAlertsService.HealthCenter do
     |> Repo.insert()
   end
 
+  def get_caregivers_by_health_id(id),
+    do: Caregivers |> where([c], c.health_center_id == ^id) |> Repo.all()
+
   @doc """
   Creates a Devices.
 
@@ -94,4 +97,6 @@ defmodule JohanAlertsService.HealthCenter do
 
   def get_device_id(nil), do: {:error, "unknown device"}
   def get_device_id(device), do: {:ok, device.id}
+  def get_device_patient_id(device), do: {:ok, device.patient_id}
+  def get_device_health_center_id(device), do: {:ok, device.health_center_id}
 end
