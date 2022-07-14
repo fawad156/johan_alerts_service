@@ -18,7 +18,6 @@ defmodule AlertNotificationTest do
     lat: 52.15,
     lon: 4.29
   }
-  @twilio_message %{body: "", from: '+15017122661', to: ""}
 
   describe "send_notification/3 When params are valid then return :ok and send message else return :error with message" do
     test "Doing send notification when patient not exist", %{} do

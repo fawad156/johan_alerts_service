@@ -19,7 +19,6 @@ defmodule JohanAlertsService.AlertNotification do
    iex> send_notification(patient,[%{country_code: "0031",health_center_id: 1,id: 1,phone: "0433876543"}],%{incident_dt: "2015-07-30T20:00:00Z" ,patient_value: 200,alert_type: "BPM",lat: 52.15,lon: 4.29})
    :ok
   """
-  alias JohanAlertsService.{Patient, HealthCenter}
 
   def send_notification(nil, [], _alerts) do
     {:error, "No patient & caregivers found"}

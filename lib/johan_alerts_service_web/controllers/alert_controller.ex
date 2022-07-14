@@ -22,8 +22,7 @@ defmodule JohanAlertsServiceWeb.AlertController do
       alert_content
       |> Map.put(:device_id, device_id)
       |> Map.put(:payload, valid_params)
-
-      # |> Alert.create_alert()
+      |> Alert.create_alert()
 
       # send notification to caregives
       patient = Patient.get_patient(device.patient_id)
