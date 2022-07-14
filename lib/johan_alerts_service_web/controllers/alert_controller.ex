@@ -51,11 +51,14 @@ defmodule JohanAlertsServiceWeb.AlertController do
   end
 
   defp update_alert_params(params) do
-    page = Map.get(params, "page", @default_page)
+    page = Map.get(params, "page", @default_page) |> convert_integer()
     at_dt = Map.get(params, "at_dt", nil)
     type_key = Map.get(params, "type_key", nil)
     params |> Map.put("page", page) |> Map.put("at_dt", at_dt) |> Map.put("type_key", type_key)
   end
+
+  defp convert_integer(page) when is_binary(page), do: String.to_integer(page)
+  defp convert_integer(page), do: page
 
   defp success_response(conn) do
     conn

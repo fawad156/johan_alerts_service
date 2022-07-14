@@ -1,0 +1,90 @@
+{
+	"info": {
+		"_postman_id": "fc03a90f-89a1-44e4-aee2-738dc7b77114",
+		"name": "johan_sports",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create alert",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": \"received\",\r\n    \"api_version\": \"v1\",\r\n    \"sim_sid\": \"QRSTUDELKMNOP\",\r\n    \"content\": \"ALERT DT=2022-07-30T21:00:00Z T=BPM VAL=200 LAT=52.1544408 LON=4.2934847\",\r\n    \"direction\": \"direction\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:4000/api/alerts",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"alerts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get alerts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:4000/api/alerts?type_key=BPM",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"alerts"
+					],
+					"query": [
+						{
+							"key": "type_key",
+							"value": "BPM"
+						},
+						{
+							"key": "at_dt",
+							"value": "2022-07-30 20:00:00",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
