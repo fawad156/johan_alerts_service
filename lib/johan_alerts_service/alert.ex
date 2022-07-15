@@ -17,20 +17,29 @@ defmodule JohanAlertsService.Alert do
   end
 
   defp alerts_filter_by_date_type(page, nil, nil) do
-    from(a in Alert) |> paginate(page) |> Repo.all()
+    from(a in Alert) |> preload(devices: :patients) |> paginate(page) |> Repo.all()
   end
 
   defp alerts_filter_by_date_type(page, nil, type_key) do
-    Alert |> where([a], a.alert_type == ^type_key) |> paginate(page) |> Repo.all()
+    Alert
+    |> where([a], a.alert_type == ^type_key)
+    |> preload(devices: :patients)
+    |> paginate(page)
+    |> Repo.all()
   end
 
   defp alerts_filter_by_date_type(page, at_dt, nil) do
-    Alert |> where([a], a.incident_dt == ^at_dt) |> paginate(page) |> Repo.all()
+    Alert
+    |> where([a], a.incident_dt == ^at_dt)
+    |> preload(devices: :patients)
+    |> paginate(page)
+    |> Repo.all()
   end
 
   defp alerts_filter_by_date_type(page, at_dt, type_key) do
     Alert
     |> where([a], a.incident_dt == ^at_dt and a.alert_type == ^type_key)
+    |> preload(devices: :patients)
     |> paginate(page)
     |> Repo.all()
   end
@@ -62,7 +71,28 @@ defmodule JohanAlertsService.Alert do
       incident_dt: alert.incident_dt,
       lat: alert.lat,
       lon: alert.lon,
-      device_id: alert.device_id
+      device: parse_device_payload(alert.devices)
+    }
+  end
+
+  defp parse_device_payload(nil), do: nil
+
+  defp parse_device_payload(devices) do
+    %{
+      device_id: devices.id,
+      health_center_id: devices.health_center_id,
+      sim_sid: devices.sim_sid,
+      patient: parse_patient_payload(devices.patients)
+    }
+  end
+
+  defp parse_patient_payload(nil), do: nil
+
+  defp parse_patient_payload(patient) do
+    %{
+      patient_id: patient.id,
+      first_name: patient.first_name,
+      last_name: patient.last_name
     }
   end
 
